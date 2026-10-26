@@ -1,5 +1,6 @@
 ---
 import { NAV_ITEMS } from "../consts";
+import AsteriskMark from "./AsteriskMark.astro";
 import ThemeToggle from "./ThemeToggle.astro";
 
 const pathname = Astro.url.pathname;
@@ -8,7 +9,7 @@ const pathname = Astro.url.pathname;
 <header class="site-header">
   <div class="site-header__inner">
     <a class="wordmark" href="/" aria-label="Kori 首页">
-      <span>kori</span><span class="wordmark__mark" aria-hidden="true">*</span>
+      <span>kori</span><span class="wordmark__mark"><AsteriskMark strokeWidth={3.2} /></span>
     </a>
 
     <nav aria-label="主导航">
@@ -53,6 +54,9 @@ const pathname = Astro.url.pathname;
   }
 
   .wordmark {
+    display: inline-flex;
+    gap: 2px;
+    align-items: center;
     width: fit-content;
     color: var(--ink);
     font-family: var(--font-serif);
@@ -68,9 +72,11 @@ const pathname = Astro.url.pathname;
   }
 
   .wordmark__mark {
-    margin-left: 2px;
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    margin-top: 3px;
     color: var(--accent);
-    font-style: normal;
   }
 
   nav ul {

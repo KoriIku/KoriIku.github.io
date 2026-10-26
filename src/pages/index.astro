@@ -1,5 +1,6 @@
 ---
 import ArticleListItem from "../components/ArticleListItem.astro";
+import AsteriskMark from "../components/AsteriskMark.astro";
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { excerpt, formatDate, getPosts, postHref } from "../lib/posts";
 
@@ -32,7 +33,7 @@ const recent = lead ? posts.filter((post) => post.id !== lead.id) : posts;
 
           <aside class="statement" aria-label="关于这个博客">
             <div class="statement__inner container">
-              <span class="statement__mark" aria-hidden="true">*</span>
+              <span class="statement__mark"><AsteriskMark strokeWidth={2.1} /></span>
               <p>
                 这里记录技术选择、创作过程和那些值得多想一会儿的问题。更新不固定，文章会尽量写得完整。
               </p>
@@ -144,13 +145,10 @@ const recent = lead ? posts.filter((post) => post.id !== lead.id) : posts;
   }
 
   .statement__mark {
+    width: 152px;
+    height: 152px;
+    margin-inline: auto;
     color: var(--accent);
-    font-family: var(--font-serif);
-    font-size: 220px;
-    font-style: normal;
-    font-weight: 300;
-    line-height: 0.7;
-    text-align: center;
   }
 
   .statement p {
@@ -205,7 +203,8 @@ const recent = lead ? posts.filter((post) => post.id !== lead.id) : posts;
     }
 
     .statement__mark {
-      font-size: 190px;
+      width: 132px;
+      height: 132px;
     }
 
     .statement p {
@@ -228,7 +227,8 @@ const recent = lead ? posts.filter((post) => post.id !== lead.id) : posts;
     }
 
     .statement__mark {
-      font-size: 152px;
+      width: 104px;
+      height: 104px;
     }
 
     .statement p {
@@ -265,7 +265,8 @@ const recent = lead ? posts.filter((post) => post.id !== lead.id) : posts;
     }
 
     .statement__mark {
-      font-size: 102px;
+      width: 72px;
+      height: 72px;
     }
 
     .statement p {
@@ -295,9 +296,9 @@ const recent = lead ? posts.filter((post) => post.id !== lead.id) : posts;
     }
 
     .statement__mark {
-      font-size: 72px;
-      line-height: 0.8;
-      text-align: left;
+      width: 58px;
+      height: 58px;
+      margin-inline: 0;
     }
 
     .statement p {
