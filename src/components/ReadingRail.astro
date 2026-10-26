@@ -10,7 +10,9 @@ interface Props {
 }
 
 const { headings } = Astro.props;
-const chapters = headings.filter((heading) => heading.depth === 2);
+const chapters = headings.filter(
+  (heading) => heading.depth >= 2 && heading.depth <= 4,
+);
 ---
 
 <nav class="reading-rail" aria-label="阅读进度与章节">
@@ -23,6 +25,7 @@ const chapters = headings.filter((heading) => heading.depth === 2);
           class="reading-rail__chapter"
           href={`#${chapter.slug}`}
           style={`--chapter-position: ${((index + 1) / (chapters.length + 1)) * 100}%`}
+          data-depth={chapter.depth}
           data-chapter-mark
         >
           <span class="reading-rail__line" aria-hidden="true"></span>
@@ -35,35 +38,72 @@ const chapters = headings.filter((heading) => heading.depth === 2);
 
 <script is:inline>
   (() => {
-    const article = document.querySelector(".article-body");
     const bar = document.querySelector(".reading-rail__bar");
     const chapterMarks = [...document.querySelectorAll("[data-chapter-mark]")];
+    const scrollElement = document.scrollingElement ?? document.documentElement;
 
     function positionChapterMarks() {
+      const article = document.querySelector(".article-body");
       if (!article || chapterMarks.length === 0) return;
 
-      const articleRect = article.getBoundingClientRect();
-      const articleTop = articleRect.top + window.scrollY;
-      const articleHeight = articleRect.height;
+      const maxScroll = Math.max(1, scrollElement.scrollHeight - window.innerHeight);
 
       for (const mark of chapterMarks) {
         const target = document.getElementById(decodeURIComponent(mark.hash.slice(1)));
         if (!target) continue;
 
         const targetTop = target.getBoundingClientRect().top + window.scrollY;
-        const position = (targetTop - articleTop) / articleHeight;
+        const readingOffset =
+          Number.parseFloat(getComputedStyle(target).scrollMarginTop) || 0;
+        const position = (targetTop - readingOffset) / maxScroll;
         const clampedPosition = Math.min(0.96, Math.max(0.04, position));
         mark.style.setProperty("--chapter-position", `${clampedPosition * 100}%`);
       }
     }
 
-    positionChapterMarks();
-    document.fonts?.ready.then(positionChapterMarks);
+    function initializeChapterRail() {
+      positionChapterMarks();
 
-    if (article) {
-      const observer = new ResizeObserver(positionChapterMarks);
-      observer.observe(article);
+      const article = document.querySelector(".article-body");
+      if (!article) return;
+
+      const resizeObserver = new ResizeObserver(positionChapterMarks);
+      resizeObserver.observe(article);
+      window.addEventListener("resize", positionChapterMarks, { passive: true });
+
+      const sectionObserver = new IntersectionObserver(
+        (entries) => {
+          for (const entry of entries) {
+            if (!entry.isIntersecting) continue;
+
+            for (const mark of chapterMarks) {
+              const isActive =
+                mark.hash === `#${encodeURIComponent(entry.target.id)}`;
+              mark.classList.toggle("is-active", isActive);
+              if (isActive) {
+                mark.setAttribute("aria-current", "location");
+              } else {
+                mark.removeAttribute("aria-current");
+              }
+            }
+          }
+        },
+        { rootMargin: "-15% 0px -75% 0px" },
+      );
+
+      for (const mark of chapterMarks) {
+        const target = document.getElementById(decodeURIComponent(mark.hash.slice(1)));
+        if (target) sectionObserver.observe(target);
+      }
     }
+
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", initializeChapterRail, { once: true });
+    } else {
+      initializeChapterRail();
+    }
+
+    document.fonts?.ready.then(positionChapterMarks);
 
     if (!bar || !("ScrollTimeline" in window)) return;
 
@@ -122,7 +162,8 @@ const chapters = headings.filter((heading) => heading.depth === 2);
     position: fixed;
     top: var(--chapter-position);
     left: 0;
-    display: flex;
+    display: grid;
+    grid-template-columns: 46px max-content;
     align-items: flex-start;
     color: var(--ink);
     opacity: 0.9;
@@ -134,9 +175,38 @@ const chapters = headings.filter((heading) => heading.depth === 2);
   .reading-rail__line {
     width: 46px;
     height: 12px;
-    flex: none;
     margin-top: -6px;
     border-bottom: 1px solid currentColor;
+    justify-self: end;
+    transition:
+      border-color 160ms ease,
+      border-width 160ms ease,
+      opacity 160ms ease;
+  }
+
+  .reading-rail__chapter[data-depth="3"] {
+    opacity: 0.72;
+  }
+
+  .reading-rail__chapter[data-depth="3"] .reading-rail__line {
+    width: 33px;
+  }
+
+  .reading-rail__chapter[data-depth="4"] {
+    opacity: 0.5;
+  }
+
+  .reading-rail__chapter[data-depth="4"] .reading-rail__line {
+    width: 20px;
+  }
+
+  .reading-rail__chapter.is-active {
+    color: var(--accent-strong);
+    opacity: 1;
+  }
+
+  .reading-rail__chapter.is-active .reading-rail__line {
+    border-bottom-width: 2px;
   }
 
   .reading-rail__label {
@@ -171,8 +241,20 @@ const chapters = headings.filter((heading) => heading.depth === 2);
       width: 24px;
     }
 
+    .reading-rail__chapter {
+      grid-template-columns: 32px max-content;
+    }
+
     .reading-rail__line {
       width: 32px;
+    }
+
+    .reading-rail__chapter[data-depth="3"] .reading-rail__line {
+      width: 23px;
+    }
+
+    .reading-rail__chapter[data-depth="4"] .reading-rail__line {
+      width: 14px;
     }
 
     .reading-rail__label {
