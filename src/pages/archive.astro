@@ -1,0 +1,96 @@
+---
+import ArticleListItem from "../components/ArticleListItem.astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { getPosts, groupByYear } from "../lib/posts";
+
+const posts = await getPosts();
+const groupedPosts = groupByYear(posts);
+---
+
+<BaseLayout title="全部文章" description="按时间排列的全部文章。">
+  <main id="main" class="archive container">
+    <header class="archive__header">
+      <h1 class="page-title">全部文章</h1>
+      <p class="page-deck">按时间排列，持续更新。</p>
+    </header>
+
+    {
+      groupedPosts.map(([year, yearPosts]) => (
+        <section class="archive__year" aria-labelledby={`year-${year}`}>
+          <h2 id={`year-${year}`}>{year}</h2>
+          <div>
+            {yearPosts.map((post) => (
+              <ArticleListItem post={post} showReadingTime={false} />
+            ))}
+          </div>
+        </section>
+      ))
+    }
+
+    {
+      posts.length === 0 && (
+        <p class="archive__empty">目前还没有发布文章。</p>
+      )
+    }
+  </main>
+</BaseLayout>
+
+<style>
+  .archive {
+    max-width: 960px;
+    padding-top: 76px;
+  }
+
+  .archive__header {
+    padding-bottom: 64px;
+  }
+
+  .archive__year {
+    display: grid;
+    grid-template-columns: 120px minmax(0, 1fr);
+    gap: 32px;
+    margin-top: 52px;
+  }
+
+  .archive__year > h2 {
+    margin: 0;
+    padding-top: 25px;
+    color: var(--ink-muted);
+    font-family: var(--font-sans);
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1.4;
+  }
+
+  .archive__empty {
+    margin-top: 48px;
+    color: var(--ink-muted);
+  }
+
+  @media (max-width: 767px) {
+    .archive {
+      width: calc(100% - 40px);
+      padding-top: 56px;
+    }
+
+    .archive__header {
+      padding-bottom: 44px;
+    }
+
+    .archive__year {
+      grid-template-columns: 1fr;
+      gap: 0;
+      margin-top: 48px;
+    }
+
+    .archive__year > h2 {
+      padding: 0 0 10px;
+    }
+  }
+
+  @media (max-width: 479px) {
+    .archive {
+      width: calc(100% - 36px);
+    }
+  }
+</style>

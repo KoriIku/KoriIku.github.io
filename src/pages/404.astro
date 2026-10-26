@@ -1,0 +1,58 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+---
+
+<BaseLayout title="页面不存在" description="没有找到这个页面。" noindex>
+  <main id="main" class="not-found container">
+    <p class="not-found__code" aria-hidden="true">404</p>
+    <h1 class="page-title">这页没有写下来。</h1>
+    <p class="page-deck">地址可能写了错字，也可能文章已经被移动。</p>
+    <p class="not-found__links">
+      <a href="/">回到首页</a>
+      <a href="/archive/">查看全部文章</a>
+    </p>
+  </main>
+</BaseLayout>
+
+<style>
+  .not-found {
+    padding-top: 72px;
+  }
+
+  .not-found__code {
+    margin: 0 0 18px;
+    color: var(--accent);
+    font-family: var(--font-serif);
+    font-size: 28px;
+    font-style: italic;
+  }
+
+  .not-found .page-deck {
+    font-family: var(--font-sans);
+    font-size: 18px;
+  }
+
+  .not-found__links {
+    display: flex;
+    gap: 24px;
+    margin-top: 36px;
+  }
+
+  .not-found__links a {
+    color: var(--accent-strong);
+    font-size: 14px;
+  }
+
+  @media (max-width: 767px) {
+    .not-found {
+      width: calc(100% - 40px);
+      padding-top: 56px;
+    }
+  }
+
+  @media (max-width: 479px) {
+    .not-found {
+      width: calc(100% - 36px);
+    }
+  }
+</style>

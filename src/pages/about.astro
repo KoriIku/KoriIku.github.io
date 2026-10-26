@@ -1,0 +1,132 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { SITE } from "../consts";
+---
+
+<BaseLayout title="关于" description="关于这个博客和它的写作方式。">
+  <main id="main" class="about container">
+    <header class="about__header">
+      <h1 class="page-title">关于</h1>
+      <p class="about__lede">
+        这是一个关于技术、写作与日常观察的个人空间。
+      </p>
+    </header>
+
+    <div class="about__body">
+      <span class="about__mark" aria-hidden="true">*</span>
+      <div class="about__copy">
+        <p>
+          这里主要记录做东西时留下的判断：哪些选择有效，哪些只是当时看起来聪明，以及一个问题怎样慢慢变得清楚。
+        </p>
+        <p>
+          文章不追逐更新频率，也不要求每篇都配上封面。页面保持简单，是因为注意力应该留给正文，而不是留给界面。
+        </p>
+        <p>
+          这个博客使用 Markdown 写作，正文与图片都可以独立加入。没有文章图片时，版面依然成立。
+        </p>
+        <p class="about__links">
+          <a href={SITE.github}>GitHub</a>
+          <a href="/rss.xml">订阅 RSS</a>
+        </p>
+      </div>
+    </div>
+  </main>
+</BaseLayout>
+
+<style>
+  .about {
+    max-width: 960px;
+    padding-top: 76px;
+  }
+
+  .about__header {
+    max-width: 760px;
+    padding-bottom: 72px;
+  }
+
+  .about__lede {
+    max-width: 22em;
+    margin: 30px 0 0;
+    color: var(--accent);
+    font-family: var(--font-serif);
+    font-size: 38px;
+    font-weight: 500;
+    line-height: 1.35;
+    text-wrap: balance;
+  }
+
+  .about__body {
+    display: grid;
+    grid-template-columns: 148px minmax(0, 680px);
+    gap: 56px;
+    align-items: start;
+    padding-top: 48px;
+    border-top: 1px solid var(--rule);
+  }
+
+  .about__mark {
+    color: var(--accent);
+    font-family: var(--font-serif);
+    font-size: 172px;
+    font-weight: 300;
+    line-height: 0.72;
+    text-align: center;
+  }
+
+  .about__copy p {
+    margin: 0 0 1.45em;
+    color: var(--ink-soft);
+    font-size: 18px;
+    line-height: 1.9;
+    text-wrap: pretty;
+  }
+
+  .about__links {
+    display: flex;
+    gap: 24px;
+    margin-top: 36px !important;
+  }
+
+  .about__links a {
+    color: var(--accent-strong);
+    font-size: 14px;
+  }
+
+  @media (max-width: 767px) {
+    .about {
+      width: calc(100% - 40px);
+      padding-top: 56px;
+    }
+
+    .about__header {
+      padding-bottom: 52px;
+    }
+
+    .about__lede {
+      margin-top: 24px;
+      font-size: 29px;
+    }
+
+    .about__body {
+      grid-template-columns: 1fr;
+      gap: 28px;
+      padding-top: 36px;
+    }
+
+    .about__mark {
+      font-size: 96px;
+      line-height: 0.8;
+      text-align: left;
+    }
+
+    .about__copy p {
+      font-size: 17px;
+    }
+  }
+
+  @media (max-width: 479px) {
+    .about {
+      width: calc(100% - 36px);
+    }
+  }
+</style>

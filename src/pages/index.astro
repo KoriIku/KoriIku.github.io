@@ -1,0 +1,319 @@
+---
+import ArticleListItem from "../components/ArticleListItem.astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { excerpt, formatDate, getPosts, postHref } from "../lib/posts";
+
+const posts = await getPosts();
+const lead = posts.find((post) => post.data.featured) ?? posts[0];
+const recent = lead ? posts.filter((post) => post.id !== lead.id) : posts;
+---
+
+<BaseLayout>
+  <main id="main">
+    {
+      lead ? (
+        <>
+          <section class="latest container" aria-labelledby="latest-title">
+            <p class="latest__meta">
+              <span>最新文章</span>
+              <time datetime={lead.data.published.toISOString()}>
+                {formatDate(lead.data.published)}
+              </time>
+            </p>
+
+            <h1 class="latest__title" id="latest-title">
+              <a href={postHref(lead)}>{lead.data.title}</a>
+            </h1>
+            <p class="latest__description">{excerpt(lead, 120)}</p>
+            <a class="latest__read" href={postHref(lead)}>
+              阅读全文 <span aria-hidden="true">→</span>
+            </a>
+          </section>
+
+          <aside class="statement" aria-label="关于这个博客">
+            <div class="statement__inner container">
+              <span class="statement__mark" aria-hidden="true">*</span>
+              <p>
+                这里记录技术选择、创作过程和那些值得多想一会儿的问题。更新不固定，文章会尽量写得完整。
+              </p>
+            </div>
+          </aside>
+
+          <section class="recent container" id="writing" aria-labelledby="recent-title">
+            <div class="recent__heading">
+              <h2 class="section-title" id="recent-title">最近文章</h2>
+              <a href="/archive/">全部文章</a>
+            </div>
+
+            <div class="recent__list">
+              {recent.map((post) => <ArticleListItem post={post} />)}
+            </div>
+          </section>
+        </>
+      ) : (
+        <section class="empty container">
+          <h1 class="page-title">文章还在路上。</h1>
+          <p class="page-deck">先把第一篇 Markdown 放进内容目录，这里就会显示最新文章。</p>
+        </section>
+      )
+    }
+  </main>
+</BaseLayout>
+
+<style>
+  .latest {
+    padding: 68px 0 72px;
+  }
+
+  .latest__meta {
+    display: flex;
+    gap: 18px;
+    margin: 0 0 24px;
+    color: var(--ink-muted);
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  .latest__meta time {
+    font-variant-numeric: tabular-nums;
+  }
+
+  .latest__title {
+    max-width: 14em;
+    margin: 0;
+    font-family: var(--font-serif);
+    font-size: 68px;
+    font-weight: 520;
+    line-height: 1.04;
+    text-wrap: balance;
+  }
+
+  .latest__title a {
+    color: var(--accent);
+    text-decoration: none;
+  }
+
+  .latest__title a:hover {
+    color: var(--accent-strong);
+  }
+
+  .latest__description {
+    max-width: 34em;
+    margin: 24px 0 0;
+    color: var(--ink-soft);
+    font-size: 18px;
+    line-height: 1.7;
+    text-wrap: pretty;
+  }
+
+  .latest__read {
+    display: inline-block;
+    margin-top: 24px;
+    color: var(--accent-strong);
+    font-size: 14px;
+    text-decoration: none;
+  }
+
+  .latest__read span {
+    display: inline-block;
+    margin-left: 3px;
+    transition: transform 180ms var(--ease);
+  }
+
+  .latest__read:hover {
+    text-decoration: underline;
+  }
+
+  .latest__read:hover span {
+    transform: translateX(4px);
+  }
+
+  .statement {
+    background: var(--paper-soft);
+    border-top: 1px solid var(--rule);
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .statement__inner {
+    display: grid;
+    grid-template-columns: 168px minmax(0, 720px);
+    gap: 50px;
+    align-items: center;
+    min-height: 280px;
+    padding-block: 44px;
+  }
+
+  .statement__mark {
+    color: var(--accent);
+    font-family: var(--font-serif);
+    font-size: 220px;
+    font-style: normal;
+    font-weight: 300;
+    line-height: 0.7;
+    text-align: center;
+  }
+
+  .statement p {
+    margin: 0;
+    font-family: var(--font-serif);
+    font-size: 32px;
+    font-weight: 480;
+    line-height: 1.42;
+    text-wrap: balance;
+  }
+
+  .recent {
+    padding-top: 88px;
+  }
+
+  .recent__heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    margin-bottom: 18px;
+  }
+
+  .recent__heading a {
+    color: var(--ink-muted);
+    font-size: 13px;
+    text-decoration: none;
+  }
+
+  .recent__heading a:hover {
+    color: var(--accent-strong);
+    text-decoration: underline;
+  }
+
+  .empty {
+    padding: 96px 0 0;
+  }
+
+  .empty .page-deck {
+    font-family: var(--font-sans);
+    font-size: 18px;
+  }
+
+  @media (max-width: 1199px) {
+    .latest__title {
+      font-size: 60px;
+    }
+
+    .statement__inner {
+      grid-template-columns: 140px minmax(0, 680px);
+      gap: 36px;
+    }
+
+    .statement__mark {
+      font-size: 190px;
+    }
+
+    .statement p {
+      font-size: 29px;
+    }
+  }
+
+  @media (max-width: 1023px) {
+    .latest {
+      padding-top: 56px;
+    }
+
+    .latest__title {
+      font-size: 52px;
+    }
+
+    .statement__inner {
+      grid-template-columns: 104px minmax(0, 1fr);
+      min-height: 240px;
+    }
+
+    .statement__mark {
+      font-size: 152px;
+    }
+
+    .statement p {
+      font-size: 26px;
+    }
+  }
+
+  @media (max-width: 767px) {
+    .latest {
+      width: calc(100% - 40px);
+      padding: 48px 0 56px;
+    }
+
+    .latest__meta {
+      margin-bottom: 20px;
+    }
+
+    .latest__title {
+      font-size: 42px;
+      line-height: 1.1;
+    }
+
+    .latest__description {
+      margin-top: 20px;
+      font-size: 16.5px;
+    }
+
+    .statement__inner {
+      grid-template-columns: 64px minmax(0, 1fr);
+      gap: 20px;
+      width: calc(100% - 40px);
+      min-height: 200px;
+      padding-block: 30px;
+    }
+
+    .statement__mark {
+      font-size: 102px;
+    }
+
+    .statement p {
+      font-size: 22px;
+    }
+
+    .recent {
+      width: calc(100% - 40px);
+      padding-top: 64px;
+    }
+  }
+
+  @media (max-width: 479px) {
+    .latest,
+    .statement__inner,
+    .recent {
+      width: calc(100% - 36px);
+    }
+
+    .latest__title {
+      font-size: 36px;
+    }
+
+    .statement__inner {
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+
+    .statement__mark {
+      font-size: 72px;
+      line-height: 0.8;
+      text-align: left;
+    }
+
+    .statement p {
+      font-size: 20px;
+    }
+  }
+
+  @media (max-width: 359px) {
+    .latest,
+    .statement__inner,
+    .recent {
+      width: calc(100% - 32px);
+    }
+
+    .latest__title {
+      font-size: 32px;
+    }
+  }
+</style>

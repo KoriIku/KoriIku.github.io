@@ -1,0 +1,132 @@
+---
+import type { Post } from "../lib/posts";
+import { excerpt, formatDate, postHref, readingTime } from "../lib/posts";
+
+interface Props {
+  post: Post;
+  showSummary?: boolean;
+  showReadingTime?: boolean;
+}
+
+const {
+  post,
+  showSummary = true,
+  showReadingTime = true,
+} = Astro.props;
+---
+
+<article class="article-row">
+  <a href={postHref(post)}>
+    <div class="article-row__meta">
+      <time datetime={post.data.published.toISOString()}>{formatDate(post.data.published)}</time>
+      {showReadingTime && <span>{readingTime(post)} 分钟</span>}
+    </div>
+
+    <div class="article-row__copy">
+      <h3>{post.data.title}</h3>
+      {showSummary && <p>{excerpt(post)}</p>}
+    </div>
+
+    <span class="article-row__arrow" aria-hidden="true">→</span>
+  </a>
+</article>
+
+<style>
+  .article-row {
+    border-top: 1px solid var(--rule);
+  }
+
+  .article-row a {
+    display: grid;
+    grid-template-columns: 124px minmax(0, 1fr) 28px;
+    gap: 28px;
+    align-items: start;
+    padding: 28px 0 30px;
+    text-decoration: none;
+  }
+
+  .article-row__meta {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding-top: 7px;
+    color: var(--ink-muted);
+    font-size: 12px;
+    line-height: 1.45;
+  }
+
+  time,
+  .article-row__meta span {
+    font-variant-numeric: tabular-nums;
+  }
+
+  .article-row__copy h3 {
+    margin: 0;
+    font-family: var(--font-serif);
+    font-size: 36px;
+    font-weight: 520;
+    line-height: 1.18;
+    text-wrap: balance;
+    transition: color 160ms ease;
+  }
+
+  .article-row__copy p {
+    max-width: 38em;
+    margin: 10px 0 0;
+    color: var(--ink-soft);
+    font-family: var(--font-sans);
+    font-size: 15px;
+    line-height: 1.7;
+  }
+
+  .article-row__arrow {
+    padding-top: 5px;
+    color: var(--accent);
+    font-family: var(--font-serif);
+    font-size: 22px;
+    transition: transform 180ms var(--ease);
+  }
+
+  .article-row a:hover .article-row__copy h3 {
+    color: var(--accent-strong);
+  }
+
+  .article-row a:hover .article-row__arrow {
+    transform: translateX(4px);
+  }
+
+  @media (max-width: 767px) {
+    .article-row a {
+      grid-template-columns: 1fr 20px;
+      gap: 16px;
+      padding: 24px 0 26px;
+    }
+
+    .article-row__meta {
+      grid-column: 1 / -1;
+      flex-direction: row;
+      gap: 14px;
+      padding-top: 0;
+    }
+
+    .article-row__copy h3 {
+      font-size: 29px;
+      line-height: 1.22;
+    }
+
+    .article-row__copy p {
+      font-size: 14px;
+    }
+
+    .article-row__arrow {
+      padding-top: 2px;
+      font-size: 19px;
+    }
+  }
+
+  @media (max-width: 479px) {
+    .article-row__copy h3 {
+      font-size: 26px;
+    }
+  }
+</style>

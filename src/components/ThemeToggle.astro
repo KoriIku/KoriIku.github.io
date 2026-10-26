@@ -1,0 +1,56 @@
+<button class="theme-toggle" type="button" data-theme-toggle>
+  <span data-theme-label>深色</span>
+</button>
+
+<script>
+  const root = document.documentElement;
+  const button = document.querySelector<HTMLButtonElement>("[data-theme-toggle]");
+  const label = button?.querySelector<HTMLElement>("[data-theme-label]");
+
+  function syncThemeButton() {
+    if (!button || !label) return;
+    const nextIsNight = root.dataset.theme !== "night";
+    label.textContent = nextIsNight ? "深色" : "浅色";
+    button.setAttribute("aria-label", nextIsNight ? "切换到深色模式" : "切换到浅色模式");
+  }
+
+  syncThemeButton();
+
+  button?.addEventListener("click", () => {
+    const nextTheme = root.dataset.theme === "night" ? "day" : "night";
+    root.dataset.theme = nextTheme;
+    try {
+      localStorage.setItem("kori-theme", nextTheme);
+    } catch {
+      // The theme still changes for this page when storage is unavailable.
+    }
+    syncThemeButton();
+  });
+</script>
+
+<style>
+  .theme-toggle {
+    display: none;
+    padding: 2px 0;
+    border: 0;
+    border-bottom: 1px solid transparent;
+    background: transparent;
+    color: var(--ink-muted);
+    font-family: var(--font-sans);
+    font-size: 13px;
+    line-height: 1.4;
+    cursor: pointer;
+    transition:
+      color 160ms ease,
+      border-color 160ms ease;
+  }
+
+  :global(html[data-js="true"]) .theme-toggle {
+    display: inline-block;
+  }
+
+  .theme-toggle:hover {
+    color: var(--accent-strong);
+    border-bottom-color: currentColor;
+  }
+</style>

@@ -1,0 +1,135 @@
+---
+import { Image } from "astro:assets";
+import { render } from "astro:content";
+
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { SITE } from "../../consts";
+import {
+  formatDate,
+  getPosts,
+  postHref,
+  readingTime,
+  type Post,
+} from "../../lib/posts";
+import "../../styles/article.css";
+
+export async function getStaticPaths() {
+  const posts = await getPosts();
+
+  return posts.map((post) => ({
+    params: { slug: post.id },
+    props: { post },
+  }));
+}
+
+interface Props {
+  post: Post;
+}
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+const posts = await getPosts();
+const currentIndex = posts.findIndex((entry) => entry.id === post.id);
+const newer = currentIndex > 0 ? posts[currentIndex - 1] : undefined;
+const older = currentIndex < posts.length - 1 ? posts[currentIndex + 1] : undefined;
+
+const published = formatDate(post.data.published);
+const updated = post.data.updated ? formatDate(post.data.updated) : null;
+const coverAlt = post.data.coverAlt ?? post.data.title;
+const coverSrc = post.data.cover ? new URL(post.data.cover.src, SITE.url).href : undefined;
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  headline: post.data.title,
+  description: post.data.description,
+  datePublished: post.data.published.toISOString(),
+  dateModified: (post.data.updated ?? post.data.published).toISOString(),
+  author: {
+    "@type": "Person",
+    name: SITE.author,
+  },
+  mainEntityOfPage: new URL(postHref(post), SITE.url).href,
+  ...(coverSrc ? { image: coverSrc } : {}),
+};
+---
+
+<BaseLayout
+  title={post.data.title}
+  description={post.data.description}
+  image={coverSrc}
+  type="article"
+  publishedTime={post.data.published.toISOString()}
+  modifiedTime={(post.data.updated ?? post.data.published).toISOString()}
+>
+  <div class="reading-progress" aria-hidden="true"></div>
+
+  <main id="main">
+    <article>
+      <header class="article-header">
+        <div class="article-header__content">
+          <div class="article-header__meta">
+            <time datetime={post.data.published.toISOString()}>{published}</time>
+            <span>{SITE.author}</span>
+            <span>{readingTime(post)} 分钟阅读</span>
+            {updated && <span>更新于 {updated}</span>}
+          </div>
+
+          <h1 class="article-title">{post.data.title}</h1>
+          {post.data.description && <p class="article-deck">{post.data.description}</p>}
+        </div>
+      </header>
+
+      {
+        post.data.cover && (
+          <figure class="article-cover">
+            <Image
+              src={post.data.cover}
+              alt={coverAlt}
+              layout="constrained"
+              widths={[640, 960, 1280]}
+              sizes="(max-width: 767px) calc(100vw - 40px), min(1024px, calc(100vw - 48px))"
+            />
+            {post.data.coverAlt && <figcaption>{post.data.coverAlt}</figcaption>}
+          </figure>
+        )
+      }
+
+      <div class="article-body prose">
+        <Content />
+      </div>
+
+      <footer class="article-end">
+        <ul class="article-tags" aria-label="文章标签">
+          {post.data.tags.map((tag) => <li>{tag}</li>)}
+        </ul>
+        <a class="article-back" href="/archive/">全部文章</a>
+      </footer>
+    </article>
+
+    {
+      (newer || older) && (
+        <nav class="article-navigation" aria-label="相邻文章">
+          {newer ? (
+            <a href={postHref(newer)}>
+              <span>较新一篇</span>
+              <strong>{newer.data.title}</strong>
+            </a>
+          ) : (
+            <span />
+          )}
+          {older ? (
+            <a class="article-navigation__next" href={postHref(older)}>
+              <span>较早一篇</span>
+              <strong>{older.data.title}</strong>
+            </a>
+          ) : (
+            <span />
+          )}
+        </nav>
+      )
+    }
+  </main>
+
+  <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+</BaseLayout>

@@ -1,0 +1,71 @@
+---
+import { SITE } from "../consts";
+
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <div class="site-footer__inner">
+    <p>© {year} {SITE.author}</p>
+    <div>
+      <a href="/rss.xml">RSS</a>
+      <a href={SITE.github} rel="me">GitHub</a>
+      <a href="#top">回到顶部</a>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    margin-top: 112px;
+    border-top: 1px solid var(--rule);
+  }
+
+  .site-footer__inner {
+    display: flex;
+    justify-content: space-between;
+    gap: 24px;
+    width: min(calc(100% - 48px), var(--page));
+    margin-inline: auto;
+    padding: 28px 0 40px;
+    color: var(--ink-muted);
+    font-size: 13px;
+    line-height: 1.5;
+  }
+
+  p {
+    margin: 0;
+  }
+
+  div {
+    display: flex;
+    gap: 20px;
+  }
+
+  a {
+    text-decoration: none;
+  }
+
+  a:hover {
+    text-decoration: underline;
+  }
+
+  @media (max-width: 767px) {
+    .site-footer {
+      margin-top: 80px;
+    }
+
+    .site-footer__inner {
+      width: calc(100% - 40px);
+      padding-bottom: 28px;
+    }
+  }
+
+  @media (max-width: 479px) {
+    .site-footer__inner {
+      align-items: flex-start;
+      flex-direction: column;
+      width: calc(100% - 36px);
+    }
+  }
+</style>
