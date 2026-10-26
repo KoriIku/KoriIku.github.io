@@ -133,6 +133,10 @@
   background: var(--rule);
 }
 
+.article-navigation--single {
+  grid-template-columns: 1fr;
+}
+
 .article-navigation a {
   display: flex;
   min-height: 156px;

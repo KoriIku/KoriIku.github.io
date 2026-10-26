@@ -32,6 +32,7 @@ const posts = await getPosts();
 const currentIndex = posts.findIndex((entry) => entry.id === post.id);
 const newer = currentIndex > 0 ? posts[currentIndex - 1] : undefined;
 const older = currentIndex < posts.length - 1 ? posts[currentIndex + 1] : undefined;
+const hasSingleNavigationItem = Boolean(newer) !== Boolean(older);
 
 const published = formatDate(post.data.published);
 const updated = post.data.updated ? formatDate(post.data.updated) : null;
@@ -109,23 +110,25 @@ const jsonLd = {
 
     {
       (newer || older) && (
-        <nav class="article-navigation" aria-label="相邻文章">
+        <nav
+          class:list={[
+            "article-navigation",
+            { "article-navigation--single": hasSingleNavigationItem },
+          ]}
+          aria-label="相邻文章"
+        >
           {newer ? (
             <a href={postHref(newer)}>
               <span>较新一篇</span>
               <strong>{newer.data.title}</strong>
             </a>
-          ) : (
-            <span />
-          )}
+          ) : null}
           {older ? (
             <a class="article-navigation__next" href={postHref(older)}>
               <span>较早一篇</span>
               <strong>{older.data.title}</strong>
             </a>
-          ) : (
-            <span />
-          )}
+          ) : null}
         </nav>
       )
     }
