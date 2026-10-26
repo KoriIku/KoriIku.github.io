@@ -40,16 +40,20 @@ const recent = lead ? posts.filter((post) => post.id !== lead.id) : posts;
             </div>
           </aside>
 
-          <section class="recent container" id="writing" aria-labelledby="recent-title">
-            <div class="recent__heading">
-              <h2 class="section-title" id="recent-title">最近文章</h2>
-              <a href="/archive/">全部文章</a>
-            </div>
+          {
+            recent.length > 0 && (
+              <section class="recent container" id="writing" aria-labelledby="recent-title">
+                <div class="recent__heading">
+                  <h2 class="section-title" id="recent-title">最近文章</h2>
+                  <a href="/archive/">全部文章</a>
+                </div>
 
-            <div class="recent__list">
-              {recent.map((post) => <ArticleListItem post={post} />)}
-            </div>
-          </section>
+                <div class="recent__list">
+                  {recent.map((post) => <ArticleListItem post={post} />)}
+                </div>
+              </section>
+            )
+          }
         </>
       ) : (
         <section class="empty container">
