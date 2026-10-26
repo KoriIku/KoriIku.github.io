@@ -1,28 +1,3 @@
-.reading-progress {
-  position: fixed;
-  inset: 0 0 auto;
-  z-index: 10;
-  width: 100%;
-  height: 2px;
-  background: var(--accent);
-  transform: scaleX(0);
-  transform-origin: left center;
-  pointer-events: none;
-}
-
-@supports (animation-timeline: scroll()) {
-  .reading-progress {
-    animation: reading-progress linear both;
-    animation-timeline: scroll(root block);
-  }
-}
-
-@keyframes reading-progress {
-  to {
-    transform: scaleX(1);
-  }
-}
-
 .article-header {
   padding: 76px 0 64px;
 }
@@ -60,8 +35,8 @@
 }
 
 .article-deck {
-  max-width: 34em;
-  margin: 24px 0 0;
+  max-width: var(--reading);
+  margin: 24px 0 0 max(0px, calc((100% - var(--reading)) / 2));
   color: var(--accent-strong);
   font-family: var(--font-serif);
   font-size: 27px;
@@ -209,6 +184,7 @@
 
   .article-deck {
     margin-top: 20px;
+    margin-left: 0;
     font-size: 21px;
   }
 
@@ -260,11 +236,5 @@
 
   .article-navigation strong {
     font-size: 24px;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .reading-progress {
-    display: none;
   }
 }

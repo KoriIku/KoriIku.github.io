@@ -3,6 +3,7 @@ import { Image } from "astro:assets";
 import { render } from "astro:content";
 
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import ReadingRail from "../../components/ReadingRail.astro";
 import { SITE } from "../../consts";
 import {
   formatDate,
@@ -27,7 +28,7 @@ interface Props {
 }
 
 const { post } = Astro.props;
-const { Content } = await render(post);
+const { Content, headings } = await render(post);
 const posts = await getPosts();
 const currentIndex = posts.findIndex((entry) => entry.id === post.id);
 const newer = currentIndex > 0 ? posts[currentIndex - 1] : undefined;
@@ -63,7 +64,7 @@ const jsonLd = {
   publishedTime={post.data.published.toISOString()}
   modifiedTime={(post.data.updated ?? post.data.published).toISOString()}
 >
-  <div class="reading-progress" aria-hidden="true"></div>
+  <ReadingRail headings={headings} />
 
   <main id="main">
     <article>
